@@ -1,4 +1,5 @@
-﻿using Microsoft.eShopWeb.ApplicationCore.Entities;
+﻿using Azure.Core;
+using Microsoft.eShopWeb.ApplicationCore.Entities;
 using Microsoft.eShopWeb.ApplicationCore.Entities.BasketAggregate;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.eShopWeb.ApplicationCore.Specifications;
@@ -7,22 +8,37 @@ using Microsoft.eShopWeb.Web.Pages.Basket;
 
 namespace Microsoft.eShopWeb.Web.Services;
 
+public class ItemDTO
+{
+    public int ItemId { get; set; }
+
+    public int Quantity { get; set; }
+}
+
+public class OrderDTO
+{
+    public IEnumerable<ItemDTO> Items { get; set; }
+}
+
 public class BasketViewModelService : IBasketViewModelService
 {
     private readonly IRepository<Basket> _basketRepository;
     private readonly IUriComposer _uriComposer;
     private readonly IBasketQueryService _basketQueryService;
     private readonly IRepository<CatalogItem> _itemRepository;
+    private readonly IOrderReserverService _orderReserverService;
 
     public BasketViewModelService(IRepository<Basket> basketRepository,
         IRepository<CatalogItem> itemRepository,
         IUriComposer uriComposer,
-        IBasketQueryService basketQueryService)
+        IBasketQueryService basketQueryService,
+        IOrderReserverService orderReserverService)
     {
         _basketRepository = basketRepository;
         _uriComposer = uriComposer;
         _basketQueryService = basketQueryService;
         _itemRepository = itemRepository;
+        _orderReserverService = orderReserverService;
     }
 
     public async Task<BasketViewModel> GetOrCreateBasketForUser(string userName)
@@ -89,5 +105,19 @@ public class BasketViewModelService : IBasketViewModelService
         var counter = await _basketQueryService.CountTotalBasketItems(username);
 
         return counter;
+    }
+
+    public async Task ReserveBasketItems(string userName)
+    {
+        //var basketSpec = new BasketWithItemsSpecification(userName);
+        //var basket = (await _basketRepository.FirstOrDefaultAsync(basketSpec));
+        //var basketViewModel = await Map(basket!);
+
+        //var items = basket!.Items.Select((x) => new ItemDTO() { ItemId = x.CatalogItemId, Quantity = x.Quantity });
+
+        var items = new ItemDTO[] { new ItemDTO() { ItemId = 1, Quantity = 3 }, new ItemDTO() { ItemId = 4, Quantity = 5 } };
+        var orderDto = new OrderDTO() { Items = items };
+
+        await _orderReserverService.ReserverOrder(orderDto);
     }
 }

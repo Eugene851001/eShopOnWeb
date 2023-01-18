@@ -4,6 +4,8 @@ using Microsoft.eShopWeb.Infrastructure.Data;
 using Microsoft.eShopWeb.Infrastructure.Data.Queries;
 using Microsoft.eShopWeb.Infrastructure.Logging;
 using Microsoft.eShopWeb.Infrastructure.Services;
+using Microsoft.eShopWeb.Web.Interfaces;
+using Microsoft.eShopWeb.Web.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -20,6 +22,7 @@ public static class ConfigureCoreServices
         services.AddScoped<IBasketService, BasketService>();
         services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<IBasketQueryService, BasketQueryService>();
+        services.AddScoped<IOrderReserverService, OrderReserverService>();
         services.AddSingleton<IUriComposer>(new UriComposer(configuration.Get<CatalogSettings>()));
         services.AddScoped(typeof(IAppLogger<>), typeof(LoggerAdapter<>));
         services.AddTransient<IEmailSender, EmailSender>();
