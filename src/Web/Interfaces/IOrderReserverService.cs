@@ -1,4 +1,5 @@
-﻿using Microsoft.eShopWeb.Web.Services;
+﻿using DeliveryOrderProcessorFunction.DTO;
+using Microsoft.eShopWeb.Web.Services;
 
 namespace Microsoft.eShopWeb.Web.Interfaces;
 

@@ -1,4 +1,5 @@
 ﻿using Azure.Core;
+using DeliveryOrderProcessorFunction.DTO;
 using Microsoft.eShopWeb.ApplicationCore.Entities;
 using Microsoft.eShopWeb.ApplicationCore.Entities.BasketAggregate;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
@@ -7,18 +8,6 @@ using Microsoft.eShopWeb.Web.Interfaces;
 using Microsoft.eShopWeb.Web.Pages.Basket;
 
 namespace Microsoft.eShopWeb.Web.Services;
-
-public class ItemDTO
-{
-    public int ItemId { get; set; }
-
-    public int Quantity { get; set; }
-}
-
-public class OrderDTO
-{
-    public IEnumerable<ItemDTO> Items { get; set; }
-}
 
 public class BasketViewModelService : IBasketViewModelService
 {

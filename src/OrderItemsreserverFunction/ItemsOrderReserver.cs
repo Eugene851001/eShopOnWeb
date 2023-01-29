@@ -6,18 +6,18 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Azure.Storage.Blobs;
 using System.Web.Http;
 using System.Text;
+using Microsoft.Azure.Cosmos;
+using System.Text.Json;
+using System.Linq;
+using System.Configuration;
 
 namespace OrderItemsreserverFunction
 {
     public static class ItemsOrderReserver
     {
-        private static string ConnectionString = "DefaultEndpointsProtocol=https;AccountName=eshopstorage42;AccountKey=QdlYfsU7HAKmFNoUnpy9djDJ9EudMZ070tisPV5cMuHKBru7qKoby3RVCYTpiHAOIR10YCl0hNbM+AStat3NoQ==;EndpointSuffix=core.windows.net";
-        private static string ContainerName = "orders";
-
         [FunctionName("ItemsOrderReserver")]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
@@ -26,9 +26,12 @@ namespace OrderItemsreserverFunction
             try
             {
                 log.LogInformation("C# HTTP trigger function processed a request.");
+                string containerName = GetEnvironmentVariable("ContainerName");
+                string connectionString = GetEnvironmentVariable("StorageConnectionString");
+                
 
-                var blobServiceClient = new BlobServiceClient(ConnectionString);
-                var blobContainer = blobServiceClient.GetBlobContainerClient(ContainerName);
+                var blobServiceClient = new BlobServiceClient(connectionString);
+                var blobContainer = blobServiceClient.GetBlobContainerClient(containerName);
                 await blobContainer.CreateIfNotExistsAsync();
 
                 string name = req.Query["name"];
@@ -44,6 +47,11 @@ namespace OrderItemsreserverFunction
 
                 return new ExceptionResult(ex, true);
             }
+        }
+
+        private static string GetEnvironmentVariable(string name)
+        {
+            return Environment.GetEnvironmentVariable(name, EnvironmentVariableTarget.Process);
         }
     }
 }
